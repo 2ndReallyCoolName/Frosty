@@ -6,6 +6,13 @@
 #include "VertexShader.h"
 #include "PixelShader.h"
 #include "VertexBuffer.h"
+#include "IndexBuffer.h"
+#include "ColorBuffer.h"
+#include "Matrix.h"
+
+#include <math.h>
+
+
 
 class Graphics
 {
@@ -26,10 +33,19 @@ private:
 	Microsoft::WRL::ComPtr <ID3D11DeviceContext> pContext;
 	Microsoft::WRL::ComPtr <ID3D11RenderTargetView> pTarget;
 
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> pDepthStencilState;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDepthStencilView;
+	Microsoft::WRL::ComPtr <ID3D11Texture2D> pDepthStencilBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
+	
 	VertexShader vertexShader;
 	PixelShader pixelShader;
-
+	
 	VertexBuffer vertexBuffer;
+	IndexBuffer indexBuffer;
+	ColorBuffer colorBuffer;
+
+	Matrix mtx;
 };
 
 

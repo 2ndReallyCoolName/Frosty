@@ -1,3 +1,8 @@
-float4 main(float2 pos : Position) : SV_POSITION{
-	return float4(pos, 0.0f, 1.0f);
+cbuffer CBuf {
+	matrix transform;
+};
+
+float4 main(float3 pos : Position) : SV_Position
+{
+	return mul(float4(pos, 1.0f), transform);
 }
