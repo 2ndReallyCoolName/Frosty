@@ -82,7 +82,20 @@ Graphics::Graphics(HWND hWnd)
 	pContext->RSSetViewports(1u, &vp);
 
 	initializeShaders();
+
+	vertexShader.bind(pContext);
+	pixelShader.bind(pContext);
+
+	pContext->PSSetShaderResources(0, 1, pTexture.GetAddressOf());
+
+	pContext->IASetInputLayout(vertexShader.getInputLayout());
+	pContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	pContext->RSSetState(vertexShader.getRasterizerState());
+	pContext->OMSetDepthStencilState(pDepthStencilState.Get(), 0u);
+
 	initializeVertices();
+
+	constantBuffer = ConstantBuffer(mtx);
 }
 
 void Graphics::RenderFrame(float angle, float x, float y) noexcept
@@ -102,88 +115,49 @@ void Graphics::RenderFrame(float angle, float x, float y) noexcept
 		}
 	};
 
-	D3D11_BUFFER_DESC cbd;
-	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cbd.Usage = D3D11_USAGE_DYNAMIC;
-	cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	cbd.MiscFlags = 0u;
-	cbd.ByteWidth = sizeof(mtx);
-	cbd.StructureByteStride = 0u;
+	constantBuffer.update(pDevice);
 
-	D3D11_SUBRESOURCE_DATA csd = {};
-	csd.pSysMem = &mtx;
-
-	FrostyExceptions::Exception(pDevice->CreateBuffer(&cbd, &csd, pConstantBuffer.GetAddressOf()));
-
-	pContext->VSSetConstantBuffers(0u, 1u, pConstantBuffer.GetAddressOf());
-	pContext->PSSetConstantBuffers(0u, 1u, colorBuffer.getColorBuffer().GetAddressOf());
-
+	constantBuffer.bind(pContext);
+	
 	pContext->ClearRenderTargetView(pTarget.Get(), color);
 	pContext->ClearDepthStencilView(pDepthStencilView.Get(), 
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	pContext->IASetInputLayout(vertexShader.getInputLayout());
-	pContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	pContext->RSSetState(vertexShader.getRasterizerState());
-	pContext->OMSetDepthStencilState(pDepthStencilState.Get(), 0u);
 
-	pContext->VSSetShader(vertexShader.getShader(), NULL, 0);
-	pContext->PSSetShader(pixelShader.getShader(), NULL, 0);
-
-	UINT stride = sizeof(vertex);
-	UINT offset = 0;
-	
-	pContext->IASetVertexBuffers(0, 1, vertexBuffer.getVertexBuffer().GetAddressOf(), &stride, &offset);
-	pContext->IASetIndexBuffer(indexBuffer.getIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0u);
-	
-
-	//pContext->Draw(vertexBuffer.getBufferSize(), 0u);
-	pContext->DrawIndexed(indexBuffer.getBufferSize(), 0u, 0u);
+	/*vertexBuffer.bind(pContext);
+	indexBuffer.bind(pContext);*/
+	cube.bind(pContext);
+	pContext->DrawIndexed(cube.getIndexBuffer().getBufferSize(), 0u, 0u);
 
 	pSwap->Present(1u, 0u);
 }
 
 void Graphics::initializeShaders()
 {
-	vertexShader = VertexShader(pDevice, L"vertexShader.cso");
-	pixelShader = PixelShader(pDevice, L"pixelShader.cso");
+	vertexShader = VertexShader(pDevice, L"TextureVS.cso");
+	pixelShader = PixelShader(pDevice, L"textureShader.cso");
+
+	FrostyExceptions::Exception(DirectX::CreateWICTextureFromFile(pDevice.Get(), L"..\\Textures\\hex_tile.jpg", nullptr, pTexture.GetAddressOf()));
+
 }
 
 void Graphics::initializeVertices()
 {
 	vertex v[] = {
-		vertex(-0.5f, -0.5f, -0.5f),
-		vertex(0.5f, -0.5f, -0.5f),
-		vertex(-0.5f, 0.5f, -0.5f),
-		vertex(0.5f, 0.5f, -0.5f),
-		vertex(-0.5f, -0.5f, 0.5f),
-		vertex(0.5f, -0.5f, 0.5f),
-		vertex(-0.5f, 0.5f, 0.5f),
-		vertex(0.5f, 0.5f, 0.5f),
+		vertex(-0.5f, -0.5f, 1.0f,		0.0f, 1.0f),
+		vertex(-0.5f, 0.5f,  1.0f,		0.0f, 0.0f),
+		vertex(0.5f, -0.5f, 1.0f,		1.0f, 0.0f),
+		vertex(0.5f, 0.5f,  1.0f,		1.0f, 1.0f),
 	};
-
-	vertexBuffer = VertexBuffer(pDevice, v, ARRAYSIZE(v));
-
-	color colors[]{
-		color(1.0f, 0.0f, 1.0f),
-		color(1.0f, 0.0f, 0.0f),
-		color(1.0f, 1.0f, 0.0f),
-		color(0.0f, 0.0f, 1.0f),
-		color(0.0f, 1.0f, 1.0f),
-		color(0.0f, 1.0f, 0.0f),
-	};
-
-	colorBuffer = ColorBuffer(pDevice, colors, ARRAYSIZE(colors));
 
 	unsigned short indices[] = {
-		0, 2, 1,	2, 3, 1,
-		1, 3, 5,	3, 7, 5,
-		2, 6, 3,	3, 6, 7,
-		4, 5, 7,	4, 7, 6,
-		0, 4, 2,	2, 4, 6,
-		0, 1, 4,	1, 5, 4
+		0, 1, 3,	0, 3, 2,
 	};
 
-	indexBuffer = IndexBuffer(pDevice, indices, ARRAYSIZE(indices));
+
+	cube = Cube(pDevice, 0.5);
+
+	/*vertexBuffer = VertexBuffer(pDevice, v, ARRAYSIZE(v));
+	indexBuffer = IndexBuffer(pDevice, indices, ARRAYSIZE(indices));*/
 
 }

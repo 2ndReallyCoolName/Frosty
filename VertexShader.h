@@ -4,6 +4,7 @@
 #include <wrl.h>
 #include <d3dcompiler.h>
 #include "FrostyExceptions.h"
+#include "Sampler.h"
 
 class VertexShader
 {
@@ -14,12 +15,15 @@ public:
 	ID3D10Blob* getBlob();
 	ID3D11InputLayout* getInputLayout();
 	ID3D11RasterizerState* getRasterizerState();
+	void bind(Microsoft::WRL::ComPtr <ID3D11DeviceContext>& pContext);
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> pShader = nullptr;
 	Microsoft::WRL::ComPtr<ID3DBlob> pBlob = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> pInputLayout = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> pRasterizerState = nullptr;
+
+	Sampler sampler;
 };
 
 

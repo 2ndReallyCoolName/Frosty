@@ -16,3 +16,8 @@ ID3D10Blob* PixelShader::getBlob()
 {
 	return pBlob.Get();
 }
+
+void PixelShader::bind(Microsoft::WRL::ComPtr<ID3D11DeviceContext>& pContext)
+{
+	pContext->PSSetShader(pShader.Get(), NULL, 0);
+}

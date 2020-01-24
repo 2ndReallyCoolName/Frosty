@@ -28,3 +28,8 @@ int IndexBuffer::getBufferSize()
 {
 	return size;
 }
+
+void IndexBuffer::bind(Microsoft::WRL::ComPtr<ID3D11DeviceContext>& pContext)
+{
+	pContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
+}

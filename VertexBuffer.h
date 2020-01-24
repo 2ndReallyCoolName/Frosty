@@ -11,6 +11,7 @@ public:
 	VertexBuffer(Microsoft::WRL::ComPtr<ID3D11Device>& pDevice, vertex* vertices, int size);
 	Microsoft::WRL::ComPtr<ID3D11Buffer> getVertexBuffer();
 	int getBufferSize();
+	void bind(Microsoft::WRL::ComPtr <ID3D11DeviceContext>& pContext);
 private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer = nullptr;
 	int size = 0;

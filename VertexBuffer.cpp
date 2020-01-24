@@ -29,3 +29,10 @@ int VertexBuffer::getBufferSize()
 {
 	return size;
 }
+
+void VertexBuffer::bind(Microsoft::WRL::ComPtr<ID3D11DeviceContext>& pContext)
+{
+	UINT stride = sizeof(vertex);
+	UINT offset = 0;
+	pContext->IASetVertexBuffers(0, 1, pVertexBuffer.GetAddressOf(), &stride, &offset);
+}

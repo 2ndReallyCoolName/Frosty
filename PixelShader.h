@@ -12,7 +12,7 @@ public:
 	PixelShader() = default;
 	ID3D11PixelShader* getShader();
 	ID3D10Blob* getBlob();
-
+	void bind(Microsoft::WRL::ComPtr <ID3D11DeviceContext>& pContext);
 private:
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> pShader = nullptr;
 	Microsoft::WRL::ComPtr<ID3DBlob> pBlob = nullptr;

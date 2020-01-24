@@ -11,6 +11,7 @@ public:
 	ColorBuffer();
 	Microsoft::WRL::ComPtr<ID3D11Buffer> getColorBuffer();
 	int getColorBufferSize();
+	void bind(Microsoft::WRL::ComPtr <ID3D11DeviceContext>& pContext);
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pColorBuffer = nullptr;

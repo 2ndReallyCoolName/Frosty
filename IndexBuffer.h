@@ -11,6 +11,7 @@ public:
 	IndexBuffer(Microsoft::WRL::ComPtr<ID3D11Device>& pDevice, unsigned short* indices, int size);
 	Microsoft::WRL::ComPtr<ID3D11Buffer> getIndexBuffer();
 	int getBufferSize();
+	void bind(Microsoft::WRL::ComPtr <ID3D11DeviceContext>& pContext);
 private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pIndexBuffer = nullptr;
 	int size = 0;

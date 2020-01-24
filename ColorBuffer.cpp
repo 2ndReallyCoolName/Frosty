@@ -34,3 +34,8 @@ int ColorBuffer::getColorBufferSize()
 {
 	return colorBufferSize;
 }
+
+void ColorBuffer::bind(Microsoft::WRL::ComPtr<ID3D11DeviceContext>& pContext)
+{
+	pContext->PSSetConstantBuffers(0u, 1u, pColorBuffer.GetAddressOf());
+}

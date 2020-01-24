@@ -9,6 +9,11 @@
 #include "IndexBuffer.h"
 #include "ColorBuffer.h"
 #include "Matrix.h"
+#include "ConstantBuffer.h"
+
+#include <WICTextureLoader.h>
+
+#include "Cube.h"
 
 #include <math.h>
 
@@ -37,15 +42,18 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDepthStencilView;
 	Microsoft::WRL::ComPtr <ID3D11Texture2D> pDepthStencilBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
-	
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pTexture;
+
 	VertexShader vertexShader;
 	PixelShader pixelShader;
 	
 	VertexBuffer vertexBuffer;
 	IndexBuffer indexBuffer;
 	ColorBuffer colorBuffer;
+	ConstantBuffer constantBuffer;
 
 	Matrix mtx;
+	Cube cube;
 };
 
 
