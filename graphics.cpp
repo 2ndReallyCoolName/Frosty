@@ -96,21 +96,26 @@ Graphics::Graphics(HWND hWnd)
 	initializeVertices();
 
 	constantBuffer = ConstantBuffer(mtx);
+
+	camera.setPosition(0.0f, 0.0f, -2.0f);
+	camera.setProjectionMatrix(90.0f, static_cast<float>(800) / static_cast<float>(300), 0.1f, 100.0f);
 }
 
-void Graphics::RenderFrame(float angle, float x, float y) noexcept
+void Graphics::RenderFrame(float angle_z, float angle_x, float angle_y, float x, float y, float z)noexcept
 {
-	const float color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	const float color[] = { 0.0f, 0.0f, 0.0f, 1.0f }; 
 
 	mtx =
 	{
 		{
 			dx::XMMatrixTranspose(
-				dx::XMMatrixRotationZ(angle) *
-				dx::XMMatrixRotationY(angle) *
+				dx::XMMatrixRotationZ(angle_z) *
+				dx::XMMatrixRotationY(angle_y) *
+				dx::XMMatrixRotationX(angle_x) *
 				dx::XMMatrixScaling(3.0f / 4.0f, 1.0f, 1.0f) *
-				dx::XMMatrixTranslation(x, y, 4.0f) *
-				dx::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 10.0f)
+				dx::XMMatrixTranslation(x, y, z) *
+				camera.getViewMatrix() *
+				camera.getProjectionMatrix() 
 			)
 		}
 	};
@@ -126,6 +131,7 @@ void Graphics::RenderFrame(float angle, float x, float y) noexcept
 
 	/*vertexBuffer.bind(pContext);
 	indexBuffer.bind(pContext);*/
+	//cube.update(pDevice, pContext, angle_x);
 	cube.bind(pContext);
 	pContext->DrawIndexed(cube.getIndexBuffer().getBufferSize(), 0u, 0u);
 
@@ -137,27 +143,15 @@ void Graphics::initializeShaders()
 	vertexShader = VertexShader(pDevice, L"TextureVS.cso");
 	pixelShader = PixelShader(pDevice, L"textureShader.cso");
 
-	FrostyExceptions::Exception(DirectX::CreateWICTextureFromFile(pDevice.Get(), L"..\\Textures\\hex_tile.jpg", nullptr, pTexture.GetAddressOf()));
+	FrostyExceptions::Exception(DirectX::CreateWICTextureFromFile(pDevice.Get(), L"..\\Textures\\brickwall.jpg", nullptr, pTexture.GetAddressOf()));
 
 }
 
 void Graphics::initializeVertices()
 {
-	vertex v[] = {
-		vertex(-0.5f, -0.5f, 1.0f,		0.0f, 1.0f),
-		vertex(-0.5f, 0.5f,  1.0f,		0.0f, 0.0f),
-		vertex(0.5f, -0.5f, 1.0f,		1.0f, 0.0f),
-		vertex(0.5f, 0.5f,  1.0f,		1.0f, 1.0f),
-	};
-
-	unsigned short indices[] = {
-		0, 1, 3,	0, 3, 2,
-	};
-
+	
 
 	cube = Cube(pDevice, 0.5);
 
-	/*vertexBuffer = VertexBuffer(pDevice, v, ARRAYSIZE(v));
-	indexBuffer = IndexBuffer(pDevice, indices, ARRAYSIZE(indices));*/
 
 }

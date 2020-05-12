@@ -10,6 +10,7 @@
 #include "ColorBuffer.h"
 #include "Matrix.h"
 #include "ConstantBuffer.h"
+#include "Camera.h"
 
 #include <WICTextureLoader.h>
 
@@ -26,7 +27,9 @@ public:
 	Graphics(const Graphics&) = delete;
 	Graphics& operator=(const Graphics&) = delete;
 	~Graphics() = default;
-	void RenderFrame(float angle, float x, float y) noexcept;
+	void RenderFrame(float angle_z, float angle_x, float angle_y, float x, float y, float z) noexcept;
+
+	Camera camera;
 
 private:
 	void initializeShaders();
